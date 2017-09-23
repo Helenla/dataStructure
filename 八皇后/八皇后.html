@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>八皇后</title>
+    <style>
+        *{ margin:0; padding:0;}
+        li{ list-style:none;}
+        #ul1{ height:auto; overflow:hidden; margin:20px auto;border:1px #000 solid;border-right:none;border-top:none;background:url(img/bg.jpg);}
+        #ul1 li{border:1px #000 solid; float:left;border-left:none;border-bottom:none;background-size: cover;}
+        #ul1 li.active{ animation:.5s infinite linear flash; -webkit-animation:.5s infinite linear flash;}
+        @keyframes flash{
+            0%{ opacity:0.1;}
+            50%{ opacity:1;}
+            100%{ opacity:0.1;}
+        }
+        @-webkit-keyframes flash{
+            0%{ opacity:0.1;}
+            50%{ opacity:1;}
+            100%{ opacity:0.1;}
+        }
+    </style>
+</head>
+<body>
+    <ul id="ul1"></ul>
+    <script>
+        var num=8;
+        var scroGrid=80;
+        var len=num*num;
+        var posArr=[];
+        var posArrAll=[];
+        var iCount=0;
+        var oUl=document.getElementById('ul1');
+        var aLi=document.getElementsByTagName('li');
+        
+        init();
+        function init(){
+            createMap();
+            setQueen(0);
+            // console.log( iCount );
+            showImg();
+        }
+        function createMap(){
+            oUl.style.width=num*scroGrid+8+'px';
+            for(var i=0;i<len;i++){
+                var oLi = document.createElement('li');
+                oLi.style.width=scroGrid+'px';
+                oLi.style.height=scroGrid+'px';
+                oLi.className='li';
+                oLi.index=-1;
+                oUl.appendChild( oLi);
+            }
+            for(var i=0;i<num;i++){
+                for(var j=0;j<num;j++){
+                    //创建坐标
+                    aLi[i*num+j].x=i;
+                    aLi[i*num+j].y=j;
+                    // aLi[i*num+j].innerHTML=i+','+j;
+                }
+            }
+        }
+
+        //八皇后核心算法
+        function setQueen(iQueen){
+            if(iQueen==num){
+                posArrAll.push(posArr.concat());
+                iCount++;
+                return
+            }
+            for(var i=0;i<num;i++){
+              if( aLi[ iQueen*num + i ].index == -1 ){
+			        aLi[ iQueen*num + i ].index = iQueen;
+                    //获取坐标
+                    posArr.push(aLi[iQueen*num+i]);
+                    var x=aLi[iQueen*num+i].x;
+                    var y=aLi[iQueen*num+i].y;
+
+                    for(var j=0;j<aLi.length;j++){
+                        if(aLi[j].index==-1&&(aLi[j].x==x||aLi[j].y==y||aLi[j].x-aLi[j].y==x-y)){
+                            aLi[j].index=iQueen;
+                            // aLi[j].innerHTML=iQueen;
+                        }
+                    }
+
+                    setQueen(iQueen+1);
+
+                    posArr.pop();
+
+                    //回溯算法
+                    for(var j=0;j<aLi.length;j++){
+                        if(aLi[j].index==iQueen){
+                            aLi[j].index=-1;
+                        }
+                    }
+               }
+           }
+        }
+        function showImg(){
+            change();
+            setInterval(change,2000)
+            function change(){
+                for(var i=0;i<aLi.length;i++){
+                    aLi[i].style.background='';
+                    aLi[i].className='';
+                }    
+                var randomLi=posArrAll[ Math.floor(posArrAll.length * Math.random()) ];
+                for(var i=0;i<randomLi.length;i++){
+                    randomLi[i].style.backgroundImage='url(img/'+ Math.floor((Math.random()*11 + 1)) +'.jpg)';
+                    randomLi[i].className="active";
+                    randomLi[i].style.animationDelay=-Math.random()*2+'s';
+                    randomLi[i].style.webkitAnimationDelay=-Math.random()*2+'s';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>A-star</title>
+    <style>
+        *{padding:0;margin: 0;}
+        #ul1{
+            border-collapse: collapse;
+            overflow: hidden;
+        }
+        #ul1>li{border:1px solid black;float:left;list-style: none;}
+        #ul1>li.li1{background:red;}
+        #ul1>li.li2{background:green;}
+        #ul1>li.li3{background:blue;}
+        #btn{
+            background: pink;
+            padding:10px 20px;
+            color:white;
+            font-size:20px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <input id="btn" value="开始寻路" type="button">
+    <ul id="ul1"></ul>
+    
+
+<script>
+        function id(ID){
+            return document.getElementById(ID);
+        }
+        function tag(name,father){
+            father=father||document;
+            return father.getElementsByTagName(name);
+        }
+        var map=[
+            0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,3,0,3,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,3,3,1,3,3,3,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,3,1,3,0,0,3,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,3,3,3,0,0,3,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,3,3,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,3,0,0,0,3,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,3,0,3,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,3,0,0,0,0,0,3,0,0,0,0,2,0,0,0,0,0,
+            0,0,0,3,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,3,3,3,3,3,3,3,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        ];
+
+        var openArr=[];
+        var closeArr=[];
+        var cols=Math.sqrt(map.length);
+        var aLi=tag('li',id('ul1'));
+        var beginLi=id('ul1').getElementsByClassName('li1');
+        var endLi=id('ul1').getElementsByClassName('li2');
+
+        init();
+
+        function init(){
+            createMap();
+            id('btn').onclick=function(){
+                openFn();
+            }
+        }
+        function showLine(){
+            var result=[];
+            var lastLi=closeArr.pop();
+            var iNow=0;
+
+            findParent(lastLi);
+            function findParent(li){
+                result.unshift(li);
+                if(li.parent==beginLi[0]){
+                    return;
+                }
+                findParent(li.parent);
+            }
+            var timer=setInterval(function(){
+                result[iNow].style.background='red';
+                iNow++;
+                if(iNow==result.length){
+                    clearInterval(timer);
+                }
+            },500)
+        }
+        //算法里时刻充斥着递归
+        function openFn(nowLi){
+            var nowLi=openArr.shift();
+            if(nowLi==endLi[0]){
+                showLine();
+                return;
+            };
+            // console.log( openArr );
+            closeFn(nowLi);
+            findLi(nowLi);
+            openArr.sort(function(li1,li2){
+                return li1.mun-li2.mun;
+            })
+            openFn();
+        }
+        function closeFn(nowLi){
+            closeArr.push(nowLi);
+        }
+        //找周围的路并记录
+        function findLi(nowLi){
+            var result=[];
+            for(var i=0;i<aLi.length;i++){
+                if(filter(aLi[i])){
+                    result.push(aLi[i]);
+                }
+            }
+            function filter(li){
+                for(var i=0;i<closeArr.length;i++){
+                    if(closeArr[i]==li){
+                        return false;
+                    }
+                }
+                for(var i=0;i<openArr.length;i++){
+                    if(openArr[i]==li){
+                        return false;
+                    }
+                }
+                return true;
+            }
+            for(var i=0;i<result.length;i++){
+                if((Math.abs(nowLi.offsetLeft - result[i].offsetLeft)<= 20+ 2)
+                    &&(Math.abs(nowLi.offsetTop - result[i].offsetTop)<= 20+ 2)){
+                        result[i].mun=f(result[i]);
+                        result[i].parent = nowLi;
+                        openArr.push(result[i]);
+                }
+            }
+        }
+        //勾古定理求距离
+        function f(nodeLi){
+            return h(nodeLi)+g(nodeLi);
+        }
+        function g(nodeLi){
+            var a=beginLi[0].offsetLeft-nodeLi.offsetLeft;
+            var b=beginLi[0].offsetTop-nodeLi.offsetTop;
+            return Math.sqrt(a*a+b*b);
+        }   
+        function h(nodeLi){
+            var a=endLi[0].offsetLeft-nodeLi.offsetLeft;
+            var b=endLi[0].offsetTop-nodeLi.offsetTop;
+            return Math.sqrt(a*a+b*b);
+        }
+        //初始地图
+        function createMap(){
+            for(var i=0;i<map.length;i++){
+                var oLi=document.createElement('li');
+                oLi.style.width=20+'px';
+                oLi.style.height=20+'px';
+                id('ul1').appendChild(oLi);
+                if(map[i]==1){
+                    oLi.className='li1';
+                    openArr.push(oLi);
+                }else if(map[i]==2){
+                    oLi.className='li2';
+                }else if(map[i]==3){
+                    oLi.className='li3';
+                    closeArr.push(oLi);
+                }
+            }
+            id('ul1').style.width=cols*(20+2)+'px';
+        }
+    </script>
+</body>
+</html>
