@@ -23,6 +23,9 @@ function clear(){
 function length(){
     return this.top
 }
+
+
+
 function change(num,n){
     var s=new stack();
     do{
@@ -38,18 +41,4 @@ function change(num,n){
 
 
 
-
-//不用 栈 搭建的数组方法
-function change(num,n){
-    var s=[]
-    do{
-        s.push(num%n)
-        num=Math.floor(num/n)
-    }while(num>0)
-    var str=''
-    do{
-        str+=s.pop()
-    }while(s.length>0)
-    return str;
-}
 change(32,2)
