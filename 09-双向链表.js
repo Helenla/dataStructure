@@ -12,7 +12,11 @@ function Llist() {
     this.display=display
     this.previous=previous
     this.findLast=findLast
+    this.currentNode=this.head
     this.disqReverse=dispReverse
+    this.advance=advance
+    this.back=back
+    this.show=show
 }
 //移除
 function remove(item){
@@ -64,4 +68,24 @@ function findLast(){
         currNode=currNode.next
     }
     return currNode
+}
+//节点向前移动n
+function advance(n){
+    while((n>0)&&(this.currentNode.next!=null)){
+        this.currentNode=this.currentNode.next
+        n--
+    }
+    return currentNode
+}
+//节点向后移动n
+function back(n){
+    while((n>0)&&(this.currentNode.element!="head")){
+        currentNode=currentNode.previous
+        n--
+    }
+    return currentNode
+}
+//显示当前节点
+function show(){
+    console.log(this.currentNode.element)
 }
