@@ -1,6 +1,8 @@
 # dataStructure
 不定期更新--
 
+markdown还不会，so打开readme再看吧
+
 以js为表达数据结构相关知识
 
 
